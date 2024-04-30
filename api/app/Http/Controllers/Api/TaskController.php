@@ -8,18 +8,20 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    public function __construct(
+        protected Task $repository,
+    ) {}
+
     public function index()
     {
-        return Task::all();
+        return $this->repository->all();
     }
 
     public function store(Request $request)
     {
         $data = $request->all();
 
-        var_dump($data);
-
-        $task = Task::create($data);
+        $task = $this->repository->create($data);
 
         return $task;
     }
@@ -27,7 +29,7 @@ class TaskController extends Controller
     public function update(Request $request, string $id)
     {
         $data = $request->all();
-        $task = Task::find($id);
+        $task = $this->repository->find($id);
 
         $updated = $task->update($data);
 
@@ -36,7 +38,7 @@ class TaskController extends Controller
 
     public function destroy(string $id)
     {
-        $task = Task::find($id);
+        $task = $this->repository->find($id);
         $task->delete();
 
         return response()->json(null, 204);
