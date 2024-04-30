@@ -19,7 +19,11 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->all();
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'user_id' => 'required|exists:users,id'
+        ]);
 
         $task = $this->repository->create($data);
 
@@ -28,7 +32,11 @@ class TaskController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $data = $request->all();
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string'
+        ]);
+
         $task = $this->repository->find($id);
 
         $updated = $task->update($data);
