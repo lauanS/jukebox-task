@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold py-8">Jukebox Task</h1>
 
     <button
-      @click="openModal"
+      @click="() => openModal()"
       class="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
     >
       Nova Tarefa
@@ -38,11 +38,19 @@
       </div>
     </div>
   </div>
+
+  <TaskModal
+    v-if="showModal"
+    :task="selectedTask || undefined"
+    @close="closeModal"
+    @save="saveTask"
+  />
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { getTasks } from "@/services/api";
+import TaskModal from "@/views/Task/_partials/TaskModal.vue";
 
 type Task = {
   id: number;
@@ -51,6 +59,7 @@ type Task = {
 };
 
 const tasks = ref<Task[]>([]);
+const selectedTask = ref<Task>();
 
 const showModal = ref<boolean>(false);
 
@@ -62,16 +71,18 @@ const fetchTasks = async () => {
   }
 };
 
-const openModal = () => {
+const openModal = (task?: Task) => {
+  selectedTask.value = task;
   showModal.value = true;
 };
 
 const closeModal = () => {
+  selectedTask.value = undefined;
   showModal.value = false;
 };
 
-const saveTask = (task: Task) => {
-  console.log("Salvar:", task);
+const saveTask = (title: string, description: string) => {
+  console.log("Salvar:", { title, description });
   closeModal();
 };
 
