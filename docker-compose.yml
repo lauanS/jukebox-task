@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  # image project
+  jukebox-task:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./api/:/var/www/
+    networks:
+      - jukebox-task
+
+  # nginx
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8989:80"
+    volumes:
+      - ./api/:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - jukebox-task
+
+  # db mysql
+  db:
+    image: mysql:8.3
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-jukebox-task}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-userpass}
+      MYSQL_USER: ${DB_USERNAME:-username}
+    volumes:
+      - ./.docker/mysql/dbdata:/var/lib/mysql
+    ports:
+      - "3388:3306"
+    networks:
+      - jukebox-task
+
+  # PHPMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-userpass}
+    networks:
+      - jukebox-task
+
+networks:
+  jukebox-task:
+    driver: bridge
