@@ -42,6 +42,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { getTasks } from "@/services/api";
 
 type Task = {
   id: number;
@@ -54,16 +55,11 @@ const tasks = ref<Task[]>([]);
 const showModal = ref<boolean>(false);
 
 const fetchTasks = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const response = await getTasks();
 
-  tasks.value = [
-    { id: 1, title: "Tarefa 1", description: "Descrição da tarefa 1" },
-    { id: 2, title: "Tarefa 2", description: "Descrição da tarefa 2" },
-    { id: 3, title: "Tarefa 3", description: "Descrição da tarefa 3" },
-    { id: 4, title: "Tarefa 4", description: "Descrição da tarefa 4" },
-    { id: 5, title: "Tarefa 5", description: "Descrição da tarefa 5" },
-    { id: 6, title: "Tarefa 6", description: "Descrição da tarefa 6" },
-  ];
+  if (response && response.data) {
+    tasks.value = response.data as Task[];
+  }
 };
 
 const openModal = () => {
