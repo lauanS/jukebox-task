@@ -45,16 +45,12 @@
 </template>
 
 <script setup lang="ts">
+import { Task } from "@/services/api";
 import { ref } from "vue";
-
-type Task = {
-  title: string;
-  description: string;
-};
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "save", title: string, description: string): void;
+  (e: "save", task: Task): void;
 }>();
 
 const props = defineProps<{
@@ -68,7 +64,7 @@ const closeModal = () => {
 };
 
 const save = () => {
-  emit("save", task.value.title, task.value.description);
+  emit("save", task.value);
 };
 
 if (props.initialTask) {

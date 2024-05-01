@@ -33,7 +33,7 @@
           <button @click="deleteTask(task.id)" class="text-red-500">
             Excluir
           </button>
-          <button @click="editTask(task)" class="text-blue-500">Editar</button>
+          <button @click="openModal(task)" class="text-blue-500">Editar</button>
         </div>
       </div>
     </div>
@@ -41,37 +41,48 @@
 
   <TaskModal
     v-if="showModal"
-    :task="selectedTask || undefined"
+    :initial-task="selectedTask"
     @close="closeModal"
-    @save="saveTask"
+    @save="operationModal"
   />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { getTasks } from "@/services/api";
+import { computed, onMounted, ref } from "vue";
+import type { Task } from "@/services/api";
+import {
+  listTasksService,
+  createTaskService,
+  deleteTaskService,
+  updateTaskService,
+} from "@/services/api";
 import TaskModal from "@/views/Task/_partials/TaskModal.vue";
 
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-};
+type TaskAPI = Task & { id: number };
 
-const tasks = ref<Task[]>([]);
-const selectedTask = ref<Task>();
+const tasks = ref<TaskAPI[]>([]);
+const selectedTask = ref<TaskAPI>();
 
 const showModal = ref<boolean>(false);
 
 const fetchTasks = async () => {
-  const response = await getTasks();
+  const response = await listTasksService();
 
   if (response && response.data) {
-    tasks.value = response.data as Task[];
+    tasks.value = response.data as TaskAPI[];
   }
 };
 
-const openModal = (task?: Task) => {
+const operationModal = computed(() => {
+  if (selectedTask.value && selectedTask.value.id) {
+    const taskId = selectedTask.value.id;
+
+    return (task: Task) => editTask(taskId, task);
+  }
+  return (task: Task) => saveTask(task);
+});
+
+const openModal = (task?: TaskAPI) => {
   selectedTask.value = task;
   showModal.value = true;
 };
@@ -81,17 +92,43 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-const saveTask = (title: string, description: string) => {
-  console.log("Salvar:", { title, description });
-  closeModal();
+const saveTask = async ({ title, description }: Task) => {
+  try {
+    const response = await createTaskService({ title, description });
+
+    console.log(response);
+
+    closeModal();
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
-const editTask = (task: Task) => {
-  console.log("Editar:", task);
+const editTask = async (taskId: number, task: Task) => {
+  try {
+    const response = await updateTaskService(taskId, task);
+
+    if (response.status === 200) {
+      console.log("update success");
+    } else {
+      console.log("updated failed with status code", response.status);
+    }
+
+    closeModal();
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
-const deleteTask = (taskId: number) => {
-  tasks.value = tasks.value.filter((task) => task.id !== taskId);
+const deleteTask = async (taskId: number) => {
+  try {
+    const response = await deleteTaskService(taskId);
+
+    console.log(response);
+    tasks.value = tasks.value.filter((task) => task.id !== taskId);
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
 onMounted(() => {
