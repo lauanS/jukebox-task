@@ -4,9 +4,7 @@
       <h2 class="text-2xl font-bold py-6">Login</h2>
       <form @submit.prevent="login" class="space-y-4">
         <div>
-          <label for="username" class="block font-medium">
-            Nome de usuário:
-          </label>
+          <label for="username" class="block font-medium">E-mail:</label>
           <input
             v-model="form.email"
             type="text"
@@ -29,8 +27,14 @@
         >
           Entrar
         </button>
-        <span class="block">Já possui uma conta? <a>Cadastre-se</a></span>
-        <span class="block">Esqueceu sua senha? <a>Redefinir senha</a></span>
+        <span class="block">
+          Não possui uma conta?
+          <router-link to="/register">Cadastre-se</router-link>
+        </span>
+        <span class="block">
+          Esqueceu sua senha?
+          <router-link to="/forgot-password">Redefinir senha</router-link>
+        </span>
         <div v-if="error" class="text-red-500">{{ error }}</div>
       </form>
     </div>
@@ -57,11 +61,7 @@ const login = async () => {
   try {
     await authService.login(form.value);
 
-    const response = await authService.user();
-    const user = response.data;
-
-    await store.dispatch("login", user);
-
+    await store.dispatch("login");
     router.push("/");
   } catch (error) {
     console.log(error);

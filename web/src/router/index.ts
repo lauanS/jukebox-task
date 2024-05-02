@@ -1,7 +1,9 @@
 import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
-import TaskView from "@/views/Task/TaskPage.vue";
-import LoginView from "@/views/Login/LoginPage.vue";
+import TaskPage from "@/views/Task/TaskPage.vue";
+import LoginPage from "@/views/Login/LoginPage.vue";
+import RegisterPage from "@/views/Register/RegisterPage.vue";
+import ForgotPasswordPage from "@/views/ForgotPassword/ForgotPasswordPage.vue";
 import store from "@/store";
 
 function ensureIsAuthenticated(to: RouteLocationNormalized) {
@@ -20,13 +22,25 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "home",
-    component: TaskView,
+    component: TaskPage,
     beforeEnter: [ensureIsAuthenticated],
   },
   {
     path: "/login",
     name: "login",
-    component: LoginView,
+    component: LoginPage,
+    beforeEnter: [ensureIsNotAuthenticated],
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: RegisterPage,
+    beforeEnter: [ensureIsNotAuthenticated],
+  },
+  {
+    path: "/forgot-password",
+    name: "forgot-password",
+    component: ForgotPasswordPage,
     beforeEnter: [ensureIsNotAuthenticated],
   },
 ];
