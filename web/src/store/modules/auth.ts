@@ -1,43 +1,49 @@
-import authService from "@/services/auth";
-import { ActionContext } from "vuex";
+import { ActionContext, ActionTree, GetterTree, MutationTree } from "vuex";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 type AuthState = {
-  user: string | null;
+  user: User | null;
 };
 
-type LoginParams = {
-  email: string;
-  password: string;
+const state: AuthState = {
+  user: null,
+};
+
+const getters: GetterTree<AuthState, never> = {
+  user: (state) => state.user,
+};
+
+const mutations: MutationTree<AuthState> = {
+  setUser(state, user: User) {
+    state.user = user;
+  },
+  logout(state) {
+    state.user = null;
+  },
+};
+
+const actions: ActionTree<AuthState, never> = {
+  login({ commit }: ActionContext<AuthState, never>, user: User) {
+    commit("setUser", user);
+  },
+  logout({ commit }: ActionContext<AuthState, never>) {
+    commit("logout");
+  },
 };
 
 export default {
   namespaced: true,
-  state: {
-    user: null,
-  },
-  getters: {},
-  mutations: {
-    // loginSuccess: (state, token) => {
-    //   state.user = token;
-    // },
-  },
-  actions: {
-    login: (
-      actionContext: ActionContext<AuthState, any>,
-      params: LoginParams
-    ) => {
-      console.log("Modules/auth.ts::login");
-      authService
-        .login(params)
-        .then(async () => {
-          console.log("Login Success");
-          const user = await authService.user();
-          console.log("User:::", user);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-  },
+  state,
+  getters,
+  mutations,
+  actions,
   modules: {},
 };

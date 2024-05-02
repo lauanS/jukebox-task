@@ -8,19 +8,19 @@
             Nome de usuário:
           </label>
           <input
-            v-model="username"
+            v-model="form.email"
             type="text"
             id="username"
-            class="mt-1 block w-full rounded text-gray-900"
+            class="mt-1 p-2 block w-full rounded text-gray-900"
           />
         </div>
         <div>
           <label for="password" class="block font-medium">Senha:</label>
           <input
-            v-model="password"
+            v-model="form.password"
             type="password"
             id="password"
-            class="mt-1 block w-full rounded text-gray-900"
+            class="mt-1 p-2 block w-full rounded text-gray-900"
           />
         </div>
         <button
@@ -29,8 +29,8 @@
         >
           Entrar
         </button>
-        <span class="block">Já possui conta? <a>Cadastre-se</a></span>
-        <span class="block">Esqueceu sua senha? <a>Redefina sua senha</a></span>
+        <span class="block">Já possui uma conta? <a>Cadastre-se</a></span>
+        <span class="block">Esqueceu sua senha? <a>Redefinir senha</a></span>
         <div v-if="error" class="text-red-500">{{ error }}</div>
       </form>
     </div>
@@ -40,20 +40,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useStore } from "vuex";
+import authService from "@/services/auth";
 
 const store = useStore();
 
-const username = ref("");
-const password = ref("");
+const form = ref({
+  email: "",
+  password: "",
+});
+
 const error = ref<string | null>(null);
 
-const login = () => {
-  console.log("LoginPage::login");
-  console.log(
-    store.dispatch("auth/login", {
-      email: "lauan.s.souza@gmail.com",
-      password: "Senha123",
-    })
-  );
+const login = async () => {
+  try {
+    await authService.login(form.value);
+
+    const response = await authService.user();
+    const user = response.data;
+
+    store.dispatch("auth/login", user);
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
