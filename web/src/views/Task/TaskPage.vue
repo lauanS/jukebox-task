@@ -4,7 +4,7 @@
 
     <button
       @click="() => openModal()"
-      class="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+      class="fixed bottom-12 right-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
     >
       Nova Tarefa
     </button>
