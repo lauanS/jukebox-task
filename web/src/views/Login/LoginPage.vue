@@ -8,6 +8,7 @@
           label="E-mail:"
           type="text"
           id="email"
+          :rules="emailRules"
         />
 
         <InputWithLabel
@@ -15,6 +16,7 @@
           label="Senha:"
           type="password"
           id="password"
+          :rules="passwordRules"
         />
 
         <button
@@ -23,15 +25,13 @@
         >
           Entrar
         </button>
+
         <span class="block">
           Não possui uma conta?
           <router-link to="/register">Cadastre-se</router-link>
         </span>
-        <span class="block">
-          Esqueceu sua senha?
-          <router-link to="/forgot-password">Redefinir senha</router-link>
-        </span>
-        <div v-if="error" class="text-red-500">{{ error }}</div>
+
+        <div v-if="loginError" class="text-red-500">{{ loginError }}</div>
       </form>
     </div>
   </div>
@@ -43,6 +43,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import authService from "@/services/auth";
 import InputWithLabel from "@/components/basics/InputWithLabel.vue";
+import { requiredRule, emailRule, passwordRule } from "@/utils/validation";
 
 const router = useRouter();
 const store = useStore();
@@ -52,10 +53,29 @@ const form = ref({
   password: "",
 });
 
-const error = ref<string | null>(null);
+const loginError = ref<string | null>(null);
 
-const login = async () => {
+const emailRules = [requiredRule, emailRule];
+const passwordRules = [requiredRule, passwordRule];
+
+function validateForm() {
+  const invalidEmail = emailRules.find((rule) => rule(form.value.email));
+  const invalidPassword = passwordRules.find((rule) =>
+    rule(form.value.password)
+  );
+
+  return !(invalidEmail || invalidPassword);
+}
+
+async function login() {
   try {
+    if (!validateForm()) {
+      loginError.value =
+        "Campos com erro ou não preenchidos, revise antes de prosseguir";
+      return;
+    }
+    loginError.value = "";
+
     await authService.login(form.value);
 
     await store.dispatch("login");
@@ -63,5 +83,5 @@ const login = async () => {
   } catch (error) {
     console.log(error);
   }
-};
+}
 </script>

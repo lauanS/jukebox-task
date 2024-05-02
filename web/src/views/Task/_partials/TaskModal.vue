@@ -6,12 +6,12 @@
       <h2 class="text-lg font-bold mb-2">Nova Tarefa</h2>
       <form @submit.prevent="save">
         <div class="mb-4">
-          <label for="title" class="block text-sm text-white">Título:</label>
-          <input
+          <InputWithLabel
             v-model="task.title"
-            id="title"
+            label="Título:"
             type="text"
-            class="mt-1 p-2 border w-full rounded text-gray-900"
+            id="title"
+            :rules="titleRules"
           />
         </div>
         <div class="mb-4">
@@ -24,6 +24,9 @@
             class="mt-1 p-2 border w-full rounded text-gray-900"
           ></textarea>
         </div>
+
+        <p v-if="taskError" class="mb-4 text-red-500">{{ taskError }}</p>
+
         <div class="flex justify-between">
           <button
             type="button"
@@ -45,8 +48,10 @@
 </template>
 
 <script setup lang="ts">
-import { Task } from "@/services/api";
 import { ref } from "vue";
+import { Task } from "@/services/api";
+import InputWithLabel from "@/components/basics/InputWithLabel.vue";
+import { requiredRule } from "@/utils/validation";
 
 const emit = defineEmits<{
   (e: "close"): void;
@@ -57,15 +62,27 @@ const props = defineProps<{
   initialTask?: Task;
 }>();
 
+const titleRules = [requiredRule];
+
 const task = ref<Task>({ title: "", description: "" });
+const taskError = ref("");
 
 const closeModal = () => {
   emit("close");
 };
 
 const save = () => {
+  if (!validateForm()) {
+    taskError.value = "Preencha o título";
+    return;
+  }
+
   emit("save", task.value);
 };
+
+function validateForm() {
+  return !titleRules.find((rule) => rule(task.value.title));
+}
 
 if (props.initialTask) {
   console.log("fill with initial task");

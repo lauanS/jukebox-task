@@ -8,6 +8,7 @@
           label="Nome:"
           type="text"
           id="username"
+          :rules="nameRules"
         />
 
         <InputWithLabel
@@ -15,6 +16,7 @@
           label="E-mail:"
           type="text"
           id="email"
+          :rules="emailRules"
         />
 
         <InputWithLabel
@@ -22,6 +24,7 @@
           label="Senha:"
           type="password"
           id="password"
+          :rules="passwordRules"
         />
 
         <InputWithLabel
@@ -29,6 +32,7 @@
           label="Confirmar senha:"
           type="password"
           id="password_confirmation"
+          :rules="passwordConfirmationRules"
         />
 
         <button
@@ -37,14 +41,12 @@
         >
           Cadastrar
         </button>
+
         <span class="block">
           Já possui uma conta?
           <router-link to="/login">Entrar</router-link>
         </span>
-        <span class="block">
-          Esqueceu sua senha?
-          <router-link to="/forgot-password">Redefinir senha</router-link>
-        </span>
+
         <div v-if="registerError" class="text-red-500">{{ registerError }}</div>
       </form>
     </div>
@@ -57,6 +59,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import authService from "@/services/auth";
 import InputWithLabel from "@/components/basics/InputWithLabel.vue";
+import { requiredRule, emailRule, passwordRule } from "@/utils/validation";
 
 const router = useRouter();
 const store = useStore();
@@ -71,8 +74,24 @@ const form = ref({
 const registerError = ref<string | null>(null);
 const registerLoading = ref(false);
 
+const nameRules = [requiredRule];
+const emailRules = [requiredRule, emailRule];
+const passwordRules = [requiredRule, passwordRule];
+const passwordConfirmationRules = [
+  requiredRule,
+  passwordRule,
+  passwordConfirmationRule,
+];
+
 const register = async () => {
   try {
+    if (!validateForm) {
+      registerError.value =
+        "Campos com erro ou não preenchidos, revise antes de prosseguir";
+
+      return;
+    }
+
     registerLoading.value = true;
     await authService.register(form.value);
 
@@ -92,4 +111,28 @@ const register = async () => {
     registerLoading.value = false;
   }
 };
+
+function validateForm() {
+  const invalidName = nameRules.find((rule) => rule(form.value.name));
+  const invalidEmail = emailRules.find((rule) => rule(form.value.email));
+  const invalidPassword = passwordRules.find((rule) =>
+    rule(form.value.password)
+  );
+  const invalidPasswordConfirmation = passwordConfirmationRules.find((rule) =>
+    rule(form.value.password_confirmation)
+  );
+
+  return !(
+    invalidName ||
+    invalidEmail ||
+    invalidPassword ||
+    invalidPasswordConfirmation
+  );
+}
+
+function passwordConfirmationRule() {
+  if (form.value.password !== form.value.password_confirmation) {
+    return "Os campos devem ser iguais";
+  }
+}
 </script>

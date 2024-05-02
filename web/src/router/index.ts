@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import TaskPage from "@/views/Task/TaskPage.vue";
 import LoginPage from "@/views/Login/LoginPage.vue";
 import RegisterPage from "@/views/Register/RegisterPage.vue";
-import ForgotPasswordPage from "@/views/ForgotPassword/ForgotPasswordPage.vue";
 import store from "@/store";
 
 function ensureIsAuthenticated(to: RouteLocationNormalized) {
@@ -35,12 +34,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/register",
     name: "register",
     component: RegisterPage,
-    beforeEnter: [ensureIsNotAuthenticated],
-  },
-  {
-    path: "/forgot-password",
-    name: "forgot-password",
-    component: ForgotPasswordPage,
     beforeEnter: [ensureIsNotAuthenticated],
   },
 ];
