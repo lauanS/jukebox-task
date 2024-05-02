@@ -105,9 +105,9 @@ const closeModal = () => {
 
 const saveTask = async ({ title, description }: Task) => {
   try {
-    const response = await createTaskService({ title, description });
+    await createTaskService({ title, description });
 
-    console.log(response);
+    fetchTasks();
 
     closeModal();
   } catch (error) {
@@ -125,6 +125,8 @@ const editTask = async (taskId: number, task: Task) => {
       console.log("updated failed with status code", response.status);
     }
 
+    fetchTasks();
+
     closeModal();
   } catch (error) {
     console.log("error", error);
@@ -133,9 +135,10 @@ const editTask = async (taskId: number, task: Task) => {
 
 const deleteTask = async (taskId: number) => {
   try {
-    const response = await deleteTaskService(taskId);
+    await deleteTaskService(taskId);
 
-    console.log(response);
+    fetchTasks();
+
     tasks.value = tasks.value.filter((task) => task.id !== taskId);
   } catch (error) {
     console.log("error", error);

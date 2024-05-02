@@ -101,6 +101,7 @@ const register = async () => {
 
     await store.dispatch("login");
     router.push("/");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 422) {
       registerError.value = "Dados informados são inválidos";
