@@ -3,24 +3,20 @@
     <div class="max-w-md w-full p-6 bg-slate-900 rounded-lg shadow-md">
       <h2 class="text-2xl font-bold py-6">Login</h2>
       <form @submit.prevent="login" class="space-y-4">
-        <div>
-          <label for="username" class="block font-medium">E-mail:</label>
-          <input
-            v-model="form.email"
-            type="text"
-            id="username"
-            class="mt-1 p-2 block w-full rounded text-gray-900"
-          />
-        </div>
-        <div>
-          <label for="password" class="block font-medium">Senha:</label>
-          <input
-            v-model="form.password"
-            type="password"
-            id="password"
-            class="mt-1 p-2 block w-full rounded text-gray-900"
-          />
-        </div>
+        <InputWithLabel
+          v-model="form.email"
+          label="E-mail:"
+          type="text"
+          id="email"
+        />
+
+        <InputWithLabel
+          v-model="form.password"
+          label="Senha:"
+          type="password"
+          id="password"
+        />
+
         <button
           type="submit"
           class="w-full bg-blue-500 hover:bg-blue-600 font-bold py-2 px-4 rounded"
@@ -46,6 +42,7 @@ import { ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import authService from "@/services/auth";
+import InputWithLabel from "@/components/basics/InputWithLabel.vue";
 
 const router = useRouter();
 const store = useStore();
