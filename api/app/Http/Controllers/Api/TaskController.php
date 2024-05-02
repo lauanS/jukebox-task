@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\api;
 
+use App\DTO\CreateTaskDTO;
+use App\DTO\UpdateTaskDTO;
 use App\Http\Controllers\Controller;
-use App\Models\Task;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
     public function __construct(
-        protected Task $repository,
+        protected TaskService $service,
     ) {}
 
     public function index()
     {
-        $userId = Auth::id();
-
-        return $this->repository->where('user_id', $userId)->get();
+        return $this->service->list();
     }
 
     public function store(Request $request)
@@ -27,13 +27,10 @@ class TaskController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        $userId = Auth::id();
-
-        $data['user_id'] = $userId;
-
-        $task = $this->repository->create($data);
-
-        return $task;
+        return $this->service->create(new CreateTaskDTO(
+            $data['title'],
+            $data['description']
+        ));
     }
 
     public function update(Request $request, string $id)
@@ -42,21 +39,21 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string'
         ]);
+        
+        $task = $this->service->update(new UpdateTaskDTO(
+            $id,
+            $data['title'],
+            $data['description']
+        ));
 
-        $userId = Auth::id();
-        $data['user_id'] = $userId;
-
-        $task = $this->repository->find($id);
-
-        $updated = $task->update($data);
-
-        return $updated;
+        if (!$task) {
+            return response()->json(['error' => 'Not Found'], Response::HTTP_NOT_FOUND);
+        }
     }
 
     public function destroy(string $id)
     {
-        $task = $this->repository->find($id);
-        $task->delete();
+        $this->service->delete($id);
 
         return response()->json(null, 204);
     }
