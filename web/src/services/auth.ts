@@ -2,9 +2,8 @@ import { client, csrf } from "@/services/api";
 
 const user = async () => {
   console.log("Service/auth.ts::user");
-  await csrf();
 
-  return await client.post("/api/user");
+  return await client.get("/api/user");
 };
 
 const login = async (payload: { email: string; password: string }) => {
