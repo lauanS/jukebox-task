@@ -1,7 +1,11 @@
 <template>
+  <NavigationBar />
   <router-view />
 </template>
 
+<script setup lang="ts">
+import NavigationBar from "@/components/NavigationBar.vue";
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

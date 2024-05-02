@@ -40,8 +40,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import authService from "@/services/auth";
 
+const router = useRouter();
 const store = useStore();
 
 const form = ref({
@@ -58,7 +60,9 @@ const login = async () => {
     const response = await authService.user();
     const user = response.data;
 
-    store.dispatch("login", user);
+    await store.dispatch("login", user);
+
+    router.push("/");
   } catch (error) {
     console.log(error);
   }
