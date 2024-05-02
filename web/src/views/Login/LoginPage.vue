@@ -58,7 +58,7 @@ const login = async () => {
     const response = await authService.user();
     const user = response.data;
 
-    store.dispatch("auth/login", user);
+    store.dispatch("login", user);
   } catch (error) {
     console.log(error);
   }
