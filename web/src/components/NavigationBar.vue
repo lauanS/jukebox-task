@@ -6,10 +6,7 @@
       </div>
       <div>
         <template v-if="isAuthenticated">
-          <button @click="logout" class="mr-5">Logout</button>
-        </template>
-        <template v-else>
-          <router-link to="/login" class="mr-5">Login</router-link>
+          <button @click="logout" class="mr-5 hover:underline">Logout</button>
         </template>
       </div>
     </div>

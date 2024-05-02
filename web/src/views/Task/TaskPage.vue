@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold py-8">Jukebox Task</h1>
+    <h1 v-if="tasks.length === 0" class="text-2xl font-bold py-8">
+      Cadastre suas tarefas clicando no botão novo no canto inferior direito
+    </h1>
+    <h1 v-else class="text-2xl font-bold py-8">Suas tarefas cadastradas</h1>
 
     <button
       @click="() => openModal()"
@@ -10,7 +13,7 @@
     </button>
 
     <span v-if="tasks.length === 0" class="text-gray-500">
-      Nenhuma tarefa encontrada.
+      Nenhuma tarefa cadastrada ainda.
     </span>
 
     <div
@@ -30,10 +33,18 @@
         </p>
 
         <div class="space-x-2 mt-5">
-          <button @click="deleteTask(task.id)" class="text-red-500">
+          <button
+            @click="deleteTask(task.id)"
+            class="text-red-500 hover:underline mr-4"
+          >
             Excluir
           </button>
-          <button @click="openModal(task)" class="text-blue-500">Editar</button>
+          <button
+            @click="openModal(task)"
+            class="text-blue-500 hover:underline ml-4"
+          >
+            Editar
+          </button>
         </div>
       </div>
     </div>
