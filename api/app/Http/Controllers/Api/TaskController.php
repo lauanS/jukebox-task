@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -14,16 +15,21 @@ class TaskController extends Controller
 
     public function index()
     {
-        return $this->repository->all();
+        $userId = Auth::id();
+
+        return $this->repository->where('user_id', $userId)->get();
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'user_id' => 'required|exists:users,id'
+            'description' => 'nullable|string'
         ]);
+
+        $userId = Auth::id();
+
+        $data['user_id'] = $userId;
 
         $task = $this->repository->create($data);
 
@@ -36,6 +42,9 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string'
         ]);
+
+        $userId = Auth::id();
+        $data['user_id'] = $userId;
 
         $task = $this->repository->find($id);
 

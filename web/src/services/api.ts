@@ -22,11 +22,11 @@ export const listTasksService = async () => {
 };
 
 export const createTaskService = async (payload: Task) => {
-  return await client.post("/api/tasks", { ...payload, user_id: 1 });
+  return await client.post("/api/tasks", payload);
 };
 
 export const updateTaskService = async (id: number, payload: Task) => {
-  return await client.put(`/api/tasks/${id}`, { ...payload, user_id: 1 });
+  return await client.put(`/api/tasks/${id}`, payload);
 };
 
 export const deleteTaskService = async (id: number) => {
